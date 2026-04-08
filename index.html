@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21天 AI PM 学习计划 — 详解与案例</title>
+<style>
+  :root {
+    --primary: #1a6ef5;
+    --primary-light: #e8f0fe;
+    --secondary: #ff6b35;
+    --success: #1db954;
+    --warning: #ffb800;
+    --dark: #1a1a2e;
+    --text: #333;
+    --muted: #666;
+    --border: #e0e0e0;
+    --bg: #f7f9fc;
+    --card: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a6ef5 0%, #0a4fcf 60%, #7c3aed 100%);
+    color: #fff; padding: 48px 32px 36px; text-align: center;
+  }
+  .header h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 8px; }
+  .header p { font-size: 1.05rem; opacity: .85; max-width: 600px; margin: 0 auto; }
+  .badge-row { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 4px 16px; font-size: .85rem; }
+
+  /* TOC */
+  .toc-wrap { max-width: 900px; margin: 28px auto 0; padding: 0 16px; }
+  .toc { background: var(--card); border-radius: 12px; padding: 24px 28px; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+  .toc h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+  .toc-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 8px; cursor: pointer; transition: background .2s; font-size: .9rem; text-decoration: none; color: var(--text); }
+  .toc-item:hover { background: var(--primary-light); color: var(--primary); }
+  .toc-day { font-size: .75rem; color: var(--muted); font-weight: 600; min-width: 38px; }
+
+  /* Week divider */
+  .week-div { max-width: 900px; margin: 32px auto 0; padding: 0 16px; }
+  .week-title { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+  .week-label { background: var(--primary); color: #fff; font-weight: 700; font-size: .85rem; padding: 4px 14px; border-radius: 20px; }
+  .week-desc { color: var(--muted); font-size: .9rem; }
+
+  /* Day card */
+  .cards-wrap { max-width: 900px; margin: 0 auto; padding: 0 16px 40px; }
+  .day-card {
+    background: var(--card); border-radius: 14px; margin: 18px 0;
+    box-shadow: 0 2px 14px rgba(0,0,0,.07); overflow: hidden;
+    border-left: 5px solid var(--primary);
+  }
+  .day-card.review { border-left-color: var(--secondary); }
+  .day-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 24px; background: var(--primary-light); cursor: pointer;
+  }
+  .day-card.review .day-header { background: #fff3ee; }
+  .day-num { font-size: 1.3rem; font-weight: 800; color: var(--primary); min-width: 54px; }
+  .day-card.review .day-num { color: var(--secondary); }
+  .day-info h3 { font-size: 1.05rem; font-weight: 700; color: var(--dark); }
+  .day-info .meta { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+  .tag { display: inline-block; background: var(--primary); color: #fff; font-size: .72rem; padding: 2px 9px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+  .day-card.review .tag { background: var(--secondary); }
+  .arrow { margin-left: auto; font-size: 1.1rem; transition: transform .3s; }
+  .open .arrow { transform: rotate(180deg); }
+
+  .day-body { padding: 20px 24px 24px; display: none; }
+  .day-body.show { display: block; }
+
+  /* Sections inside day */
+  .section { margin-bottom: 22px; }
+  .section:last-child { margin-bottom: 0; }
+  .section-title {
+    font-size: .9rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 10px; padding-bottom: 5px;
+    border-bottom: 2px solid var(--primary-light);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .day-card.review .section-title { color: var(--secondary); border-bottom-color: #ffe3d6; }
+
+  /* Tasks */
+  .task-list { list-style: none; }
+  .task-list li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px dashed var(--border); align-items: flex-start; }
+  .task-list li:last-child { border-bottom: none; }
+  .task-icon { font-size: 1rem; min-width: 22px; }
+  .task-text { flex: 1; font-size: .92rem; }
+  .task-time { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+
+  /* Knowledge box */
+  .knowledge { background: #f0f6ff; border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+  .knowledge p { font-size: .91rem; margin-bottom: 6px; }
+  .knowledge p:last-child { margin-bottom: 0; }
+
+  /* Case box */
+  .case-box { background: linear-gradient(135deg, #fffbe6 0%, #fff8dc 100%); border: 1px solid #ffe98a; border-radius: 10px; padding: 16px 18px; }
+  .case-box .case-title { font-weight: 700; font-size: .92rem; color: #a07000; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .case-box .case-content { font-size: .9rem; color: #555; }
+  .case-box .case-content p { margin-bottom: 7px; }
+  .case-box .case-content p:last-child { margin-bottom: 0; }
+  .case-box strong { color: #333; }
+
+  /* Tips */
+  .tips { background: #f0fff4; border-left: 4px solid var(--success); border-radius: 0 8px 8px 0; padding: 12px 16px; margin-top: 12px; font-size: .88rem; color: #1a7a3a; }
+
+  /* Output badge */
+  .output-badge { display: inline-flex; align-items: center; gap: 5px; background: #e8ffe8; color: #1a7a3a; border: 1px solid #a0d8a0; border-radius: 8px; font-size: .8rem; padding: 3px 10px; margin-top: 10px; }
+
+  /* Footer */
+  .footer { text-align: center; padding: 28px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚀 21天 AI PM 成长计划</h1>
+  <p>专为天然气行业产品经理设计，从AI认知到实战项目，每天附通俗易懂案例</p>
+  <div class="badge-row">
+    <span class="badge">📅 21天系统学习</span>
+    <span class="badge">🏭 天然气行业场景</span>
+    <span class="badge">💡 每章配套案例</span>
+    <span class="badge">📄 每天有输出物</span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc-wrap">
+  <div class="toc">
+    <h2>📋 目录导航</h2>
+    <div class="toc-grid" id="toc"></div>
+  </div>
+</div>
+
+<!-- Week 1 -->
+<div class="week-div">
+  <div class="week-title">
+    <span class="week-label">第一周</span>
+    <span class="week-desc">AI认知奠基 · 建立语言体系（Day 1–7）</span>
+  </div>
+</div>
+
+<div class="cards-wrap">
+
+<!-- Day 1 -->
+<div class="day-card" id="day1">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 1</div>
+    <div class="day-info">
+      <h3>AI PM认知 <span class="tag">认知</span></h3>
+      <div class="meta">📅 2026-04-07 · ⏱ 70分钟 · 输出物：个人能力迁移清单</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body show">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI PM与传统数智化PM的差异</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">梳理自身3项可迁移的PM能力</span><span class="task-time">20min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">梳理3项AI方向需补齐的能力</span><span class="task-time">20min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 核心知识点（扩充版）</div>
+      <div class="knowledge">
+        <p><strong>📌 传统数智化PM vs AI PM 核心对比</strong></p>
+        <p>传统PM负责业务流程数字化，关注功能实现、需求文档、排期交付，产品逻辑确定性强，上线即稳定。</p>
+        <p>AI PM除以上外，还需理解模型能力边界、数据质量要求、模型迭代机制，产品天生存在不确定性。</p>
+        <br>
+        <p><strong>📌 AI PM的4大核心职责</strong></p>
+        <p>① <strong>需求翻译官</strong>：把业务需求翻译成算法工程师能理解的目标（"漏查率降到2%"→"召回率≥90%的异常检测模型"）。</p>
+        <p>② <strong>数据协调者</strong>：推动数据获取、清洗、标注，管理数据质量，这是AI项目成败的关键。</p>
+        <p>③ <strong>效果验收人</strong>：定义并执行AI效果验收标准，不能只看功能实现，还要看模型效果是否达标。</p>
+        <p>④ <strong>迭代驱动者</strong>：建立Bad Case收集和模型持续迭代机制，推动AI产品不断进化。</p>
+        <br>
+        <p><strong>📌 AI PM的3层思维模型</strong></p>
+        <p>🔴 <strong>业务层</strong>：这个AI功能解决什么业务问题？ROI是什么？</p>
+        <p>🟡 <strong>产品层</strong>：用户如何使用这个AI功能？置信度、兜底设计怎么做？</p>
+        <p>🟢 <strong>技术层</strong>：需要什么数据？用什么模型？有没有技术风险？</p>
+        <br>
+        <p><strong>📌 AI产品的"不确定性三角"</strong></p>
+        <p>AI产品面临三重不确定：<br>
+        · <strong>效果不确定</strong>：模型表现受数据质量和分布影响，同样的模型在不同数据上效果差异巨大<br>
+        · <strong>时间不确定</strong>：数据准备和模型迭代周期难以精准预测<br>
+        · <strong>需求不确定</strong>：业务方往往在看到AI效果后才能清晰化需求，需要快速迭代对齐</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🎯 AI PM 必备技能全图谱</div>
+      <div class="knowledge" style="padding:0;background:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="background:#e8f0fe;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#1a6ef5;margin-bottom:8px;">🧠 认知能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 理解LLM/RAG/Prompt等AI核心概念</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 能读懂算法工程师的"翻译"</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 了解主流AI能力边界（能做什么/不能做什么）</p>
+            <p style="font-size:.88rem;">✅ 理解模型评估指标（准确率/召回率/F1）</p>
+          </div>
+          <div style="background:#f0fff4;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#1db954;margin-bottom:8px;">📋 需求能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 将业务目标转化为可量化的AI任务</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 识别"适合AI做"和"不适合AI做"的需求</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 定义AI验收标准（事前，不是事后）</p>
+            <p style="font-size:.88rem;">✅ 管理业务方对AI的合理期望</p>
+          </div>
+          <div style="background:#fff3ee;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#ff6b35;margin-bottom:8px;">📊 数据能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 能评估数据质量和数据可用性</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 设计数据标注规范和质控流程</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 理解数据隐私合规基本要求</p>
+            <p style="font-size:.88rem;">✅ 建立数据飞轮（用户反馈→数据→模型提升）</p>
+          </div>
+          <div style="background:#fef9e7;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#d4a017;margin-bottom:8px;">🤝 协作能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 与算法工程师用"指标语言"沟通</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 与业务方用"价值语言"沟通</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 推动跨团队（算法/工程/业务）协同</p>
+            <p style="font-size:.88rem;">✅ 向管理层汇报AI项目进展和ROI</p>
+          </div>
+          <div style="background:#f3e8ff;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#7c3aed;margin-bottom:8px;">🎨 产品设计能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ AI结果的置信度可视化设计</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 人工兜底和失败态设计</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 可解释性设计（让用户信任AI）</p>
+            <p style="font-size:.88rem;">✅ Prompt模板设计能力</p>
+          </div>
+          <div style="background:#fce4ec;border-radius:10px;padding:14px 16px;">
+            <div style="font-weight:700;color:#c2185b;margin-bottom:8px;">🔄 迭代运营能力</div>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 建立Bad Case收集和分析机制</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 推动模型持续迭代（不是一次交付）</p>
+            <p style="font-size:.88rem;margin-bottom:4px;">✅ 监控模型上线后的效果漂移</p>
+            <p style="font-size:.88rem;">✅ 量化并汇报AI业务价值（降本/提效数据）</p>
+          </div>
+        </div>
+        <div style="background:#1a1a2e;color:#fff;border-radius:10px;padding:14px 18px;margin-top:12px;font-size:.88rem;">
+          💡 <strong>PM能力迁移重点：</strong>你已有的需求分析、项目管理、跨部门沟通能力完全可迁移。需要补齐的是：AI技术认知（第一周）+ 数据思维（第五天）+ 效果验收能力（第十七天）。
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气管道巡检PM的角色转变</div>
+        <div class="case-content">
+          <p><strong>传统PM做法：</strong>你负责"管道巡检APP"项目。需求是：巡检员每天记录阀门状态、拍照上传、系统汇总报表。产品逻辑固定，开发完上线就完事。</p>
+          <p><strong>AI PM做法：</strong>现在引入AI自动识别泄漏点。你除了管功能，还要：①提供历史泄漏数据让模型训练；②设计"AI识别置信度低时转人工"的兜底逻辑；③上线后持续收集漏报/误报case，推动模型迭代。</p>
+          <p>💬 <strong>一句话记忆：</strong>传统PM像盖楼（建完就交付），AI PM像养孩子（上线只是开始，要持续教它学习）。</p>
+        </div>
+      </div>
+      <div class="tips">✍️ <strong>今日输出：</strong>写一份"个人能力迁移清单"，列出你已有的3项PM能力（如需求分析、项目管理）如何迁移到AI场景，再列出3项需补齐的（如模型评估、数据标注）。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 2 -->
+<div class="day-card" id="day2">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 2</div>
+    <div class="day-info">
+      <h3>AI基础术语 <span class="tag">术语</span></h3>
+      <div class="meta">📅 2026-04-08 · ⏱ 60分钟 · 输出物：AI术语笔记</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习 LLM、RAG、Prompt、Embedding</span><span class="task-time">20min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">学习微调、向量库、幻觉、私有化部署</span><span class="task-time">20min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">用自己的话解释8个AI术语</span><span class="task-time">20min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 核心知识点（8个术语深度解析）</div>
+      <div class="knowledge">
+        <p>📌 <strong>LLM（大语言模型）</strong>：基于海量文本训练的AI，能理解和生成自然语言，如GPT-4、文心一言、通义千问。<br>
+        &nbsp;&nbsp;→ <em>关键理解</em>：LLM是"概率性"的，它预测下一个词最可能是什么，不是"查数据库"，这是幻觉的根源。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：LLM的能力边界（长文本理解、多轮对话、代码生成），以及它不擅长的（精确计算、实时数据、私有知识）。</p>
+        <br>
+        <p>📌 <strong>RAG（检索增强生成）</strong>：让AI先检索知识库再回答，解决AI"乱说话"问题。<br>
+        &nbsp;&nbsp;→ <em>工作原理</em>：用户问题→语义搜索相关文档→文档+问题一起喂给LLM→LLM基于真实文档回答。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：知识库的质量直接决定RAG效果，要有"知识库维护"的运营机制。</p>
+        <br>
+        <p>📌 <strong>Prompt（提示词）</strong>：你给AI的指令，质量直接影响AI输出效果。<br>
+        &nbsp;&nbsp;→ <em>关键理解</em>：同一个问题，Prompt写法不同，AI回答质量可能相差10倍。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：系统Prompt（System Prompt）是产品设计的一部分，决定AI的"性格"和能力范围。</p>
+        <br>
+        <p>📌 <strong>Embedding（向量化）</strong>：把文字、图片等转成高维数字向量，让计算机能"理解"语义相似度。<br>
+        &nbsp;&nbsp;→ <em>通俗理解</em>："天然气泄漏"和"管道漏气"在向量空间里距离很近，说明AI能理解它们是同一件事。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：Embedding模型的质量影响RAG检索精度，行业领域最好用专门训练的Embedding模型。</p>
+        <br>
+        <p>📌 <strong>微调（Fine-tuning）</strong>：在通用大模型基础上，用行业/任务特定数据继续训练，让模型更懂专业场景。<br>
+        &nbsp;&nbsp;→ <em>何时需要微调</em>：①通用模型不懂行业术语 ②需要特定输出格式 ③RAG效果不够好时。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：微调需要高质量行业数据，成本较高，需评估是否值得；很多场景用Prompt+RAG就够了。</p>
+        <br>
+        <p>📌 <strong>向量库（Vector DB）</strong>：专门存储Embedding向量并支持高速语义检索的数据库（如Milvus、Chroma、Pinecone）。<br>
+        &nbsp;&nbsp;→ <em>与普通数据库的区别</em>：普通DB用关键词精确匹配，向量库用"语义相似度"模糊匹配，更适合自然语言查询。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：向量库的数据更新策略（新知识如何加入）是RAG系统运营的关键点。</p>
+        <br>
+        <p>📌 <strong>幻觉（Hallucination）</strong>：AI自信地说出不存在或错误的信息，像"瞎编"，且语气很肯定。<br>
+        &nbsp;&nbsp;→ <em>为什么会幻觉</em>：LLM本质是预测下一个最可能的词，当训练数据中没有准确答案时，它会"合理推断"出一个听起来正确的答案。<br>
+        &nbsp;&nbsp;→ <em>PM应对</em>：①用RAG让AI基于真实文档回答 ②重要决策必须人工复核 ③设计"来源标注"让用户可验证。</p>
+        <br>
+        <p>📌 <strong>私有化部署</strong>：把AI模型部署在企业自己的服务器上，数据不出厂，安全可控。<br>
+        &nbsp;&nbsp;→ <em>适用场景</em>：涉及机密数据（天然气管网信息、生产数据）、有合规要求、需要完全自主可控的场景。<br>
+        &nbsp;&nbsp;→ <em>PM关注</em>：私有化部署成本高（GPU服务器+运维），需评估是否真的需要，还是可以用数据脱敏+公有云的方案。</p>
+        <br>
+        <p style="background:#e8f0fe;padding:10px 12px;border-radius:8px;"><strong>🔗 8个术语的关联关系：</strong><br>
+        LLM是大脑 → 靠Prompt沟通 → 用RAG补充知识 → RAG依赖Embedding向量化 → 向量存入Vector DB → 行业场景可微调 → 结果可能有幻觉需管控 → 敏感场景需私有化部署</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：用天然气场景理解8个术语</div>
+        <div class="case-content">
+          <p><strong>场景：</strong>你们公司要做一个"天然气设备故障问答系统"。</p>
+          <p>🔹 <strong>LLM</strong>：就是系统的"大脑"，理解维修员输入的问题（如"压缩机异响怎么处理"）。</p>
+          <p>🔹 <strong>RAG</strong>：AI不是凭空回答，先去查你们公司的维修手册知识库，再组织答案，准确多了。</p>
+          <p>🔹 <strong>Embedding</strong>：把"压缩机异响"这几个字变成一串数字，在知识库里找最相似的内容，就像"语义搜索"。</p>
+          <p>🔹 <strong>向量库</strong>：存放所有设备手册向量化内容的"仓库"，查询超快。</p>
+          <p>🔹 <strong>Prompt</strong>：你写"你是一个天然气设备专家，请根据以下资料回答问题……"，这就是Prompt。</p>
+          <p>🔹 <strong>微调</strong>：通用模型不懂"调压阀"，把1000条天然气领域QA喂给它训练，让它懂行业话。</p>
+          <p>🔹 <strong>幻觉</strong>：AI回答"压缩机异响换XYZ零件"，但其实这个零件根本不存在，它在"瞎说"——这就是幻觉，必须用RAG+人工审核来控制。</p>
+          <p>🔹 <strong>私有化部署</strong>：设备故障信息涉密，不能传到公有云，必须在公司内网自己的GPU服务器上跑模型。</p>
+        </div>
+      </div>
+      <div class="output-badge">📄 输出物：用自己的话，每个术语写一句解释，形成"AI术语笔记"</div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 3 -->
+<div class="day-card" id="day3">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 3</div>
+    <div class="day-info">
+      <h3>AI项目全流程 <span class="tag">流程</span></h3>
+      <div class="meta">⏱ 70分钟 · 输出物：流程对比图</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI项目全流程（需求→数据→模型→产品→运营）</span><span class="task-time">25min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">绘制AI项目简易流程图</span><span class="task-time">25min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">对比天然气产线流程写出异同点</span><span class="task-time">20min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI项目全流程（详解版）</div>
+      <div class="knowledge">
+        <p><strong>① 需求定义</strong>：明确业务目标（降低什么成本、提升什么效率），而非直接"上AI"。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：输出"AI需求文档"，包含：业务痛点、AI能解决的具体子问题、成功指标定义、数据来源梳理。<br>
+        &nbsp;&nbsp;→ <em>常见误区</em>：老板说"我要用AI做XXX"，PM不加分析直接立项，结果做了3个月发现该问题AI根本解决不了。</p>
+        <br>
+        <p><strong>② 数据准备（最容易低估的环节）</strong>：收集、清洗、标注数据——AI的燃料，没有好数据，模型再强也没用。<br>
+        &nbsp;&nbsp;→ <em>三个子任务</em>：数据收集（从哪来？多少量？）→ 数据清洗（去噪、补缺、统一格式）→ 数据标注（打标签，确定标注规范）。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：评估数据可用性，协调数据获取资源，设计标注规范并组织标注工作。<br>
+        &nbsp;&nbsp;→ <em>时间预估</em>：这个环节通常占项目总时间的30-50%，是最常被低估的。</p>
+        <br>
+        <p><strong>③ 模型选型/训练</strong>：算法团队选择或训练模型，PM需理解原理和能力边界。<br>
+        &nbsp;&nbsp;→ <em>选型思路</em>：优先用成熟的API（如大模型API），其次用开源模型微调，最后才考虑从头训练（成本极高）。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：参与模型方案评审，理解各方案的优缺点和风险，不做技术决策但要能提出合理问题。</p>
+        <br>
+        <p><strong>④ 产品集成</strong>：将模型封装为API或功能模块，与业务系统集成。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：定义接口规范（输入/输出格式）、设计降级方案（模型挂了怎么办）、定义前端展示逻辑。<br>
+        &nbsp;&nbsp;→ <em>关键点</em>：AI结果怎么展示给用户？置信度如何呈现？兜底逻辑是什么？</p>
+        <br>
+        <p><strong>⑤ 效果验收</strong>：定义指标（准确率/召回率等），测试模型是否达标。<br>
+        &nbsp;&nbsp;→ <em>重要原则</em>：验收标准必须在项目启动时定义，不能上线后再讨论，否则容易扯皮。<br>
+        &nbsp;&nbsp;→ <em>验收方法</em>：用"金标准测试集"（已知正确答案的数据）盲测模型，计算各项指标。</p>
+        <br>
+        <p><strong>⑥ 上线运营（AI项目真正的开始）</strong>：灰度发布、监控效果、收集用户反馈、持续迭代。<br>
+        &nbsp;&nbsp;→ <em>灰度策略</em>：先选小范围用户/区域试用，控制风险，收集真实反馈再全量推广。<br>
+        &nbsp;&nbsp;→ <em>运营核心</em>：建立Bad Case收集机制 → 定期分析误报/漏报 → 补充标注 → 模型迭代 → 效果提升（数据飞轮）。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：设计用户反馈入口，建立模型监控看板，定期组织迭代评审。</p>
+        <br>
+        <p style="background:#fff3ee;padding:10px 12px;border-radius:8px;"><strong>⚠️ AI项目与传统IT项目最大的不同：</strong><br>
+        传统IT：需求→开发→测试→上线→完成。<br>
+        AI项目：需求→数据→模型→上线→<strong>运营迭代→运营迭代→运营迭代……</strong>（无限循环，持续进化）</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气泄漏智能预警系统上线全过程</div>
+        <div class="case-content">
+          <p><strong>需求：</strong>管网巡检靠人工，一天只能查20个点，遗漏率高。目标：AI自动预测可能泄漏的管段，优先派人去查。</p>
+          <p><strong>数据：</strong>收集近3年管道压力、温度、腐蚀等传感器数据 + 人工确认的泄漏记录，进行清洗和标注。</p>
+          <p><strong>模型：</strong>算法工程师用时序预测模型训练，PM参与定义"什么是泄漏风险高"的标准。</p>
+          <p><strong>集成：</strong>预警结果推送到巡检员APP，高风险管段标红，派单优先级自动调整。</p>
+          <p><strong>验收：</strong>试运行2周，对比人工漏查率从8%降至2%，达标上线。</p>
+          <p><strong>运营：</strong>持续收集误报/漏报，每月迭代模型，效果越来越好。</p>
+          <p>💬 <strong>与传统IT项目的最大不同：</strong>传统项目"开发完就交付"，AI项目"上线是起点，运营才是关键"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 4 -->
+<div class="day-card" id="day4">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 4</div>
+    <div class="day-info">
+      <h3>AI项目风险 <span class="tag">风险</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：AI项目风险清单</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI项目常见风险类型</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">列出10条风险+应对措施</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI项目10大常见风险（深度解析）</div>
+      <div class="knowledge">
+        <p>1. <strong>数据质量差</strong>：数据不准确/缺失，模型训出来就是错的。<br>&nbsp;&nbsp;→ 应对：项目立项前做"数据摸底报告"，明确数据量、质量、覆盖率，不达标先治理再立项。</p>
+        <p>2. <strong>数据量不足</strong>：样本太少（尤其异常/负样本），模型泛化能力差，遇到新情况就失效。<br>&nbsp;&nbsp;→ 应对：数据增强（对少量数据做变换扩充）、迁移学习（用相似领域数据预训练）。</p>
+        <p>3. <strong>需求定义模糊</strong>：业务目标不清晰（"做个智能系统"），模型方向跑偏，交付后与预期不符。<br>&nbsp;&nbsp;→ 应对：需求文档中必须有可量化目标，并与业务方签字确认。</p>
+        <p>4. <strong>期望过高</strong>：业务方以为AI"万能"，实际效果有上限，上线后失望放弃。<br>&nbsp;&nbsp;→ 应对：项目启动时做"期望管理"，明确AI能做什么、不能做什么，设定合理的第一阶段目标。</p>
+        <p>5. <strong>模型漂移（Concept Drift）</strong>：上线后外部环境变化（季节、设备老化、业务调整），模型效果悄悄下降，而没人发现。<br>&nbsp;&nbsp;→ 应对：建立模型效果监控看板，设置效果下降预警阈值，定期重新评估。</p>
+        <p>6. <strong>黑盒不可解释</strong>：模型给出结论但说不清原因，用户不信任，尤其在安全关键场景。<br>&nbsp;&nbsp;→ 应对：优先选可解释的轻量模型；深度模型必须做可解释性设计（展示主要依据/关键特征）。</p>
+        <p>7. <strong>数据安全合规</strong>：工业数据出境、员工数据泄露、未做脱敏就用于训练，面临法律/监管风险。<br>&nbsp;&nbsp;→ 应对：项目启动前做合规评估，明确数据使用范围，敏感数据必须脱敏。</p>
+        <p>8. <strong>算法/工程对齐难</strong>：算法团队优化模型指标，但工程/产品没有对齐到业务目标，各做各的。<br>&nbsp;&nbsp;→ 应对：PM作为"翻译"，把业务目标转化成模型指标要求，并在周会上保持三方对齐。</p>
+        <p>9. <strong>上线后无人运维</strong>：没有建立Bad Case收集和模型迭代机制，AI产品上线后逐渐腐化失效。<br>&nbsp;&nbsp;→ 应对：上线前就设计好运营机制（谁负责收集Bad Case、多久迭代一次、迭代触发条件是什么）。</p>
+        <p>10. <strong>ROI算不清</strong>：无法量化AI带来的业务价值，难以获得管理层持续投入支持。<br>&nbsp;&nbsp;→ 应对：上线前定义业务价值指标（减少多少人工时、降低多少误判率），上线后持续追踪并汇报。</p>
+        <br>
+        <p style="background:#fce8e8;padding:10px 12px;border-radius:8px;"><strong>🔴 天然气行业特有风险：</strong><br>
+        ①安全关键场景的漏报风险（泄漏漏报可能导致爆炸，成本无限大）；②工业控制网与AI系统的集成安全；③老旧传感器数据质量普遍差，数据治理成本高。</p>
+      </div>
+
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：某天然气公司AI预测项目翻车全记录</div>
+        <div class="case-content">
+          <p><strong>风险1触发：</strong>历史传感器数据有30%是坏值（传感器老化没人管），训出的模型把正常压力波动都判成"泄漏"，误报率80%，现场人员骂骂咧咧。</p>
+          <p><strong>风险4触发：</strong>副总裁拍板"AI要做到100%准确率"，实际工业场景能到92%已经非常好，项目因期望差距被叫停。</p>
+          <p><strong>风险6触发：</strong>AI说"这段管道有风险"，现场工程师问"为什么？"，系统答不上来，工程师直接不信任，系统沦为摆设。</p>
+          <p>💡 <strong>应对措施示例：</strong><br>
+          ① 项目启动前做数据摸底，数据质量不达标先做数据治理再做AI。<br>
+          ② 与业务方对齐"可接受的准确率下限"，签字确认。<br>
+          ③ 模型结论旁展示"主要依据是：压力突降+历史同段3次维修记录"，增加可解释性。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 5 -->
+<div class="day-card" id="day5">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 5</div>
+    <div class="day-info">
+      <h3>数据与标注 <span class="tag">数据</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：数据需求文档片段</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习数据清洗、标注、合规基础</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">撰写天然气场景数据需求说明</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 核心知识点（数据与标注详解）</div>
+      <div class="knowledge">
+        <p><strong>📊 数据清洗（Data Cleaning）</strong>：处理原始数据中的问题，确保质量。<br>
+        &nbsp;&nbsp;→ <em>常见问题</em>：① 缺失值（传感器掉线导致数据空白）② 异常值（硬件故障导致的离谱数值）③ 重复数据（同一时刻多条记录）④ 格式不统一（时间戳格式不一致）<br>
+        &nbsp;&nbsp;→ <em>处理方式</em>：缺失值→插值/删除/标记；异常值→统计方法识别后删除或修正；重复→去重；格式→标准化。<br>
+        &nbsp;&nbsp;→ <em>PM要做的</em>：制定数据质量标准（允许缺失率上限、异常值判断规则），而不是让算法工程师自己定。</p>
+        <br>
+        <p><strong>🏷️ 数据标注（Data Labeling）</strong>：给数据打标签，是模型学习的"标准答案"。<br>
+        &nbsp;&nbsp;→ <em>标注类型</em>：分类标注（正常/异常）、边界框标注（图像中标出泄漏位置）、序列标注（时序中标出异常时段）。<br>
+        &nbsp;&nbsp;→ <em>标注规范的重要性</em>：标注规范模糊会导致不同标注员对同一数据打出不同标签，模型学到的是噪声。<br>
+        &nbsp;&nbsp;→ <em>质控方法</em>：① 双人标注+对比（两人标同一批，一致性率&lt;85%说明规范有问题）② 专家抽查 ③ 难例讨论会</p>
+        <br>
+        <p><strong>⚖️ 数据合规（Data Compliance）</strong>：<br>
+        &nbsp;&nbsp;→ <em>《数据安全法》要求</em>：重要数据（含关键基础设施数据）不得出境，需评估数据安全等级。<br>
+        &nbsp;&nbsp;→ <em>数据脱敏</em>：用于训练/测试的数据必须去除可识别个人/位置的信息（站点编号→随机ID，坐标→模糊化）。<br>
+        &nbsp;&nbsp;→ <em>供应商合规</em>：合同中明确供应商不得将客户数据用于其他用途。</p>
+        <br>
+        <p><strong>🔄 数据飞轮（Data Flywheel）</strong>：<br>
+        &nbsp;&nbsp;→ 产品上线 → 用户使用并反馈误判 → 误判数据标注入库 → 模型用新数据迭代 → 效果提升 → 吸引更多用户使用<br>
+        &nbsp;&nbsp;→ <em>PM的关键任务</em>：设计好用户反馈入口（"标记此结果不准确"按钮），让数据飞轮转起来。</p>
+        <br>
+        <p><strong>📏 数据集划分规范</strong>：<br>
+        &nbsp;&nbsp;→ 训练集（70%）：模型学习用 | 验证集（15%）：调参用 | 测试集（15%）：最终效果评估用<br>
+        &nbsp;&nbsp;→ <em>重要原则</em>：测试集必须与训练集完全隔离，不能用测试集数据调参，否则效果评估不可信。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：为"管道异常检测模型"准备数据</div>
+        <div class="case-content">
+          <p><strong>数据清洗（比喻）：</strong>想象你收集了10年的日记，但有些页是空白的、有些日期写错了、有些被水泡糊了。你必须先把这些"坏页"修复或删除，才能拿去分析。传感器数据同理：漏传的点要补，硬件故障导致的异常值要剔除。</p>
+          <p><strong>数据标注（比喻）：</strong>就像批改作业。你有1000段时序曲线，请有经验的工程师在每段旁边写上"正常"或"异常"，AI就靠这些"批改过的作业"来学习判断标准。</p>
+          <p><strong>天然气场景数据需求示例：</strong><br>
+          · 数据来源：SCADA系统近3年压力/温度/流量传感器数据<br>
+          · 数据量要求：至少2000条"异常"样本 + 8000条"正常"样本<br>
+          · 标注规范：由有5年以上经验的工程师标注，标注"异常"需附原因<br>
+          · 合规要求：数据在公司内网存储，不上传公有云，脱敏站点编号
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 6 -->
+<div class="day-card" id="day6">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 6</div>
+    <div class="day-info">
+      <h3>AI产品指标 <span class="tag">指标</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：简易指标表</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习准确率、召回率、时延、成本等指标</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">设计天然气智能分析指标体系</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 核心指标体系（详解版）</div>
+      <div class="knowledge">
+        <p><strong>🎯 模型效果指标（评估AI"准不准"）</strong></p>
+        <p>📌 <strong>准确率（Precision）</strong>：AI说"有问题"的里，真正有问题的比例。= TP/(TP+FP)<br>
+        &nbsp;&nbsp;→ <em>低准确率的代价</em>：误报多，用户被烦，逐渐失去信任，不再理会预警。</p>
+        <p>📌 <strong>召回率（Recall）</strong>：实际有问题的里，AI发现的比例。= TP/(TP+FN)<br>
+        &nbsp;&nbsp;→ <em>低召回率的代价</em>：漏报多，在天然气安全场景中可能导致严重事故。</p>
+        <p>📌 <strong>F1分数</strong>：准确率和召回率的调和平均，两者兼顾时用。= 2×P×R/(P+R)<br>
+        &nbsp;&nbsp;→ <em>适用场景</em>：当准确率和召回率都重要且无法牺牲其一时使用。</p>
+        <p>📌 <strong>AUC-ROC</strong>：模型区分正负样本的综合能力，0.5是随机猜，1.0是完美。<br>
+        &nbsp;&nbsp;→ <em>适用场景</em>：用于评估模型整体排序能力，不受阈值影响。</p>
+        <br>
+        <p><strong>⚡ 系统性能指标（评估AI"快不快/稳不稳"）</strong></p>
+        <p>📌 <strong>时延（Latency）</strong>：从输入到AI给出结果的时间，影响用户体验。<br>
+        &nbsp;&nbsp;→ 实时预警场景要求 &lt;1秒；报告生成场景可接受5-10秒。</p>
+        <p>📌 <strong>吞吐量（Throughput/QPS）</strong>：单位时间内系统处理的请求数，影响系统容量规划。</p>
+        <p>📌 <strong>可用性（Availability）</strong>：系统正常运行时间占比。关键系统要求99.9%（即全年停机&lt;9小时）。</p>
+        <br>
+        <p><strong>💰 成本指标（评估AI"划不划算"）</strong></p>
+        <p>📌 <strong>单次推理成本</strong>：每调用一次AI模型的GPU/API费用，规模化后影响ROI。</p>
+        <p>📌 <strong>TCO（总拥有成本）</strong>：开发+训练+推理+标注+运维的全部成本。</p>
+        <br>
+        <p><strong>📈 业务价值指标（评估AI"有没有用"，最终老板关心的）</strong></p>
+        <p>📌 <strong>效率提升</strong>：使用AI后，某项工作耗时减少的百分比。</p>
+        <p>📌 <strong>成本降低</strong>：AI替代人工节省的金额；减少事故节省的损失。</p>
+        <p>📌 <strong>错误率降低</strong>：关键指标，如漏查率从8%降到2%。</p>
+        <br>
+        <p style="background:#e8f0fe;padding:10px 12px;border-radius:8px;"><strong>🔑 PM设计指标的优先顺序：</strong><br>
+        业务价值指标（最重要，对齐管理层）→ 模型效果指标（技术团队关注）→ 系统性能指标（工程团队关注）→ 成本指标（财务关注）</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：用"找坏苹果"理解准确率和召回率</div>
+        <div class="case-content">
+          <p><strong>场景：</strong>AI检测天然气管道中异常震动，判断是否需要维修。</p>
+          <p>假设100段管道，实际有10段真正有问题。AI识别出15段"有问题"。<br>
+          · 其中10段是真的有问题（AI判对了），5段是误报（AI瞎说的）。<br>
+          · <strong>准确率 = 10/15 = 67%</strong>（AI说有问题的里，对了67%）<br>
+          · <strong>召回率 = 10/10 = 100%</strong>（实际有问题的全都被AI找出来了）</p>
+          <p><strong>哪个更重要？</strong><br>
+          🔹 天然气安全场景：<strong>召回率</strong>更重要！宁可多派人查（误报成本低），不能漏掉泄漏（漏报成本是爆炸）。<br>
+          🔹 推荐广告场景：<strong>准确率</strong>更重要！乱推广告会让用户反感。</p>
+          <p><strong>时延案例：</strong>AI判断需要3秒，但现场操作员需要实时决策，就需要把时延优化到200ms以内，否则产品体验很差。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 7 -->
+<div class="day-card review" id="day7">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 7</div>
+    <div class="day-info">
+      <h3>第一周复盘 <span class="tag">复盘</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：周总结文档</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">整理前6天学习内容，形成学习手册</span><span class="task-time">60min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 第一周知识体系梳理</div>
+      <div class="knowledge">
+        <p>✅ 我知道AI PM与传统PM的3大核心差异。</p>
+        <p>✅ 我能用通俗语言解释LLM/RAG/Prompt等8个术语。</p>
+        <p>✅ 我理解AI项目从需求到运营的6个阶段。</p>
+        <p>✅ 我能列出AI项目10个常见风险及应对。</p>
+        <p>✅ 我理解数据清洗、标注流程及合规要求。</p>
+        <p>✅ 我能区分准确率/召回率并知道在安全场景中哪个更重要。</p>
+      </div>
+    </div>
+    <div class="tips">🏆 完成本周学习后，你已建立AI PM的基础认知框架。下周进入产品设计与技术落地。</div>
+  </div>
+</div>
+
+</div><!-- end cards-wrap week1 -->
+
+<!-- Week 2 -->
+<div class="week-div">
+  <div class="week-title">
+    <span class="week-label">第二周</span>
+    <span class="week-desc">产品设计与技术落地（Day 8–14）</span>
+  </div>
+</div>
+
+<div class="cards-wrap">
+
+<!-- Day 8 -->
+<div class="day-card" id="day8">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 8</div>
+    <div class="day-info">
+      <h3>AI产品设计 <span class="tag">设计</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：产品分析笔记</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI产品设计原则（渐进披露、置信度展示、人工兜底）</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">分析1个AI产品的优缺点（如钉钉AI助理/Copilot）</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI产品设计原则（详解版）</div>
+      <div class="knowledge">
+        <p><strong>1. 渐进披露（Progressive Disclosure）</strong>：先给核心结论，用户需要时再展示详情和依据，避免信息过载。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：默认只显示"高风险/中风险/低风险"标签，点击后才展示传感器数值曲线和异常原因。</p>
+        <br>
+        <p><strong>2. 置信度可视化</strong>：让用户知道AI"有多确定"，帮助用户决定是否信任这条结果。<br>
+        &nbsp;&nbsp;→ <em>展示方式</em>：百分比（91%）、等级（高/中/低把握）、颜色（红/橙/黄）。<br>
+        &nbsp;&nbsp;→ <em>关键设计</em>：置信度低于阈值（如60%）时，不直接给出结论，改为"需人工判断"状态。</p>
+        <br>
+        <p><strong>3. 人工兜底设计（Human-in-the-Loop）</strong>：置信度低或高风险决策，必须有人工参与。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：设计"一键转人工"按钮；设计"标记AI错误"反馈入口；安全关键决策（如停气）必须人工确认。<br>
+        &nbsp;&nbsp;→ <em>原则</em>：AI辅助人工决策，而不是替代人工决策（至少在AI效果成熟前）。</p>
+        <br>
+        <p><strong>4. 可解释性设计（Explainability）</strong>：展示AI推理的主要依据，增加用户信任。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：在预警旁边显示"主要依据：①压力过去2小时下降1.8kPa ②历史上该段有2次泄漏记录"。<br>
+        &nbsp;&nbsp;→ <em>价值</em>：用户能判断AI说得有没有道理，即使AI偶尔错了，用户也不会失去信任。</p>
+        <br>
+        <p><strong>5. 失败态设计（Graceful Degradation）</strong>：网络断开/模型异常时，产品优雅降级为传统模式，不能直接崩溃。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：AI服务不可用时，系统自动切回手动录入模式，并显示"AI功能暂时不可用，请手动操作"。</p>
+        <br>
+        <p><strong>6. 反馈闭环设计</strong>：让用户的每次"AI判断对/错"反馈都能进入数据收集流程。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：每条AI预警结果旁设置[确认正确] [标记误报] [实际情况]按钮，反馈自动入库。</p>
+        <br>
+        <p><strong>7. 透明度原则</strong>：明确告知用户"这是AI给出的建议，不是系统的最终决定"。<br>
+        &nbsp;&nbsp;→ <em>实践</em>：在AI输出结果旁标注"AI辅助判断"，避免用户误以为是人工专家意见。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：设计"天然气智能巡检助手"界面</div>
+        <div class="case-content">
+          <p><strong>差设计 ❌：</strong>AI弹出一个红框："第37管段—故障！"。操作员不知道为什么，也不知道该怎么办，直接不信任关掉。</p>
+          <p><strong>好设计 ✅：</strong></p>
+          <p>🔴 <strong>第37管段 · 高风险预警</strong>（置信度：91%）<br>
+          主要依据：① 压力过去2小时下降1.8kPa ② 历史上该段有过2次泄漏记录<br>
+          建议操作：<strong>优先派巡检员核查</strong> ｜ [标记正常] ｜ [已处理]</p>
+          <p>当置信度低于60%，自动改为"待核实"状态，不直接报警，减少误报扰民。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 9 -->
+<div class="day-card" id="day9">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 9</div>
+    <div class="day-info">
+      <h3>Prompt工程 <span class="tag">Prompt</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：Prompt模板库</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习Prompt结构与写法（角色+背景+任务+格式+限制）</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">编写3条天然气行业Prompt</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 Prompt工程原理（深度解析）</div>
+      <div class="knowledge">
+        <p><strong>📌 为什么Prompt质量决定AI效果？</strong><br>
+        LLM是基于概率预测下一个词，它的输出高度依赖输入的"上下文"（Prompt）。好的Prompt能让AI的潜力充分发挥，差的Prompt让强大的模型也输出垃圾。</p>
+        <br>
+        <p><strong>📌 Prompt黄金公式（5要素）</strong></p>
+        <p>① <strong>角色设定</strong>："你是一位有20年经验的天然气管道工程师" → 让AI进入专家模式，回答更专业。</p>
+        <p>② <strong>背景信息</strong>：提供与任务相关的上下文（当前场景、历史数据、用户情况），信息越充分，答案越准确。</p>
+        <p>③ <strong>具体任务</strong>：明确告诉AI要做什么（分析/总结/生成/翻译），避免模糊指令。</p>
+        <p>④ <strong>输出格式</strong>：指定输出格式（JSON/表格/bullet点/指定字数），减少AI"自由发挥"带来的不确定性。</p>
+        <p>⑤ <strong>限制条件</strong>：约束AI的行为（"不要编造数据" "只基于以下资料" "用专业术语"），减少幻觉。</p>
+        <br>
+        <p><strong>📌 Prompt进阶技巧</strong></p>
+        <p>🔸 <strong>Few-shot（少样本）示例</strong>：给AI看1-3个"例子"，让它学习你想要的回答模式，效果比纯文字描述好很多。</p>
+        <p>🔸 <strong>思维链（Chain-of-Thought）</strong>：要求AI"先分析原因，再给出结论"，让它展示推理过程，提高复杂任务准确率。</p>
+        <p>🔸 <strong>分隔符使用</strong>：用"---"或XML标签分隔不同内容（如&lt;背景&gt;&lt;/背景&gt;），让AI更准确理解指令边界。</p>
+        <p>🔸 <strong>迭代优化</strong>：Prompt很少一次到位，需要根据AI输出效果反复调整（改措辞/加约束/给例子）。</p>
+        <br>
+        <p><strong>📌 PM在Prompt工程中的角色</strong><br>
+        PM是"Prompt架构师"，负责定义：① AI在产品中的角色定位（System Prompt）② 不同场景下的Prompt模板 ③ 质量标准和限制规则<br>
+        不需要PM自己写Prompt，但需要PM定义Prompt的需求和标准。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 天然气行业Prompt示例</div>
+      <div class="case-box">
+        <div class="case-title">💬 3条实用Prompt模板</div>
+        <div class="case-content">
+          <p><strong>Prompt 1 - 故障分析：</strong></p>
+          <p style="background:#f5f5f5;padding:10px;border-radius:6px;font-family:monospace;font-size:.85rem;">你是一位有20年经验的天然气管道工程师。以下是传感器数据摘要：[粘贴数据]。请分析可能的异常原因，按可能性从高到低列出3个假设，每个假设给出判断依据和建议排查步骤。不要做超出数据范围的推测。</p>
+          <p><strong>Prompt 2 - 报告生成：</strong></p>
+          <p style="background:#f5f5f5;padding:10px;border-radius:6px;font-family:monospace;font-size:.85rem;">你是一名天然气公司运维报告撰写专家。根据以下本周巡检数据：[数据]，生成一份200字的周报。格式：①本周概况 ②主要异常 ③处理结果 ④下周重点。语言简洁专业，面向管理层。</p>
+          <p><strong>Prompt 3 - 培训问答：</strong></p>
+          <p style="background:#f5f5f5;padding:10px;border-radius:6px;font-family:monospace;font-size:.85rem;">你是天然气安全知识培训老师，面向新入职的现场操作员。请用通俗易懂的语言解释"调压器超压保护原理"，举一个生活中的类比，全文不超过150字。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 10 -->
+<div class="day-card" id="day10">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 10</div>
+    <div class="day-info">
+      <h3>RAG技术落地 <span class="tag">RAG</span></h3>
+      <div class="meta">⏱ 70分钟 · 输出物：RAG架构+说明</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习RAG原理与流程（知识库→检索→生成）</span><span class="task-time">35min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">绘制RAG简易架构图</span><span class="task-time">35min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 RAG工作原理（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 为什么需要RAG？</strong><br>
+        LLM的3个核心局限：① 知识截止日期（不知道最新信息）② 不了解企业私有知识 ③ 容易"幻觉"乱说。<br>
+        RAG通过"先查文档再回答"同时解决这3个问题。</p>
+        <br>
+        <p><strong>📌 RAG完整工作流（4阶段）</strong></p>
+        <p>🔵 <strong>阶段1：知识库建设（离线）</strong><br>
+        企业文档/手册/规程 → 文档切片（Chunking，切成适合检索的段落）→ Embedding向量化 → 存入向量数据库<br>
+        <em>PM要关注</em>：切片策略（按句/按段/按章节？）影响检索效果；知识库的更新频率和维护机制。</p>
+        <br>
+        <p>🟡 <strong>阶段2：查询处理（在线）</strong><br>
+        用户问题 → 问题Embedding向量化 → 在向量库中相似度搜索 → 找到Top-K相关文档片段<br>
+        <em>PM要关注</em>：Top-K设置多少合适？相关度阈值怎么设？低相关度结果要不要给LLM？</p>
+        <br>
+        <p>🟢 <strong>阶段3：增强生成</strong><br>
+        检索到的文档片段 + 用户原始问题 → 组合成新的Prompt → 发给LLM → LLM基于提供的文档回答<br>
+        <em>PM要关注</em>：如果检索到的文档没有答案，LLM应该说"没有找到相关信息"，而不是编答案。</p>
+        <br>
+        <p>🔴 <strong>阶段4：来源标注</strong><br>
+        AI回答后，附上"参考来源：《XB-200型调压器维修手册》第4.2节"，让用户可验证。<br>
+        <em>PM要关注</em>：来源标注是增加用户信任、减少幻觉担忧的关键设计。</p>
+        <br>
+        <p><strong>📌 RAG常见问题和优化方向</strong></p>
+        <p>🔸 <strong>检索不到相关内容</strong>：→ 优化知识库切片策略；添加关键词索引作为补充。</p>
+        <p>🔸 <strong>检索到内容但回答错误</strong>：→ 优化Prompt让LLM更好利用检索结果；检查文档内容本身是否准确。</p>
+        <p>🔸 <strong>知识库过时</strong>：→ 设计知识库版本管理和定期更新机制。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气设备维修手册智能问答</div>
+        <div class="case-content">
+          <p><strong>没有RAG的AI（纯LLM）：</strong><br>
+          维修员问："我们公司的XB-200型调压器如何更换密封圈？"<br>
+          AI答："根据通用规程，更换密封圈需要…" — 答的是通用知识，不一定符合你公司的XB-200型号规格，甚至可能把步骤数量编错。</p>
+          <p><strong>有RAG的AI：</strong><br>
+          ① AI先去知识库里检索"XB-200调压器"相关文档片段（搜索到3段相关维修规程）<br>
+          ② 把这3段文字连同问题一起发给LLM<br>
+          ③ AI答："根据《XB-200型调压器维修手册第4.2节》，更换步骤如下：1.泄压... 2.拆卸..." 来源可追溯。</p>
+          <p>💬 <strong>RAG就像：</strong>不让AI凭记忆回答，而是先给它拿到相关参考书再回答，准确性大幅提升。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 11 -->
+<div class="day-card" id="day11">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 11</div>
+    <div class="day-info">
+      <h3>需求拆解WBS <span class="tag">需求</span></h3>
+      <div class="meta">⏱ 70分钟 · 输出物：需求WBS</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI需求拆解方法（用户故事+验收标准+AI能力边界确认）</span><span class="task-time">35min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">完成天然气AI需求WBS拆解</span><span class="task-time">35min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI需求拆解方法论（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 AI需求评估三问（做之前必问）</strong></p>
+        <p>① <strong>这个问题AI能解决吗？</strong>→ 先评估AI能力边界，不要在AI不适用的场景硬上AI（如完全无数据的新场景）。</p>
+        <p>② <strong>有足够的数据支撑吗？</strong>→ 数据是AI的天花板，数据量和质量决定效果上限。</p>
+        <p>③ <strong>业务价值值得投入吗？</strong>→ 评估ROI（投入 vs 业务收益），避免为AI而AI。</p>
+        <br>
+        <p><strong>📌 AI需求拆解4步法</strong></p>
+        <p><strong>Step 1：业务目标量化</strong><br>
+        把模糊的业务目标转化为AI可评测的指标。<br>
+        ❌ 错误示范："让AI帮忙分析设备故障"（无法评测）<br>
+        ✅ 正确示范："AI预测压缩机故障，提前3-7天预警，故障漏报率从15%降到5%以下"</p>
+        <p><strong>Step 2：用户故事拆解</strong><br>
+        "作为[角色]，我需要[AI功能]，以便[业务价值]"<br>
+        示例："作为巡检员，我希望收到AI按风险优先级排序的巡检任务，这样我能优先处理最危险的管段，提高巡检效率。"</p>
+        <p><strong>Step 3：AI能力边界确认（关键！）</strong><br>
+        与算法工程师对齐：<br>
+        · AI在这个场景能达成的合理精度是多少？<br>
+        · 什么类型的case AI判断困难（如极端情况、历史样本少的情况）？<br>
+        · 有哪些技术风险（数据不够、算力不足）？<br>
+        → 输出：AI能力边界文档，双方签字确认</p>
+        <p><strong>Step 4：验收标准定义（必须在立项时定）</strong><br>
+        包含：① 效果指标（准确率/召回率阈值）② 性能指标（响应时间）③ 功能指标（哪些功能必须实现）④ 边界处理（低置信度时如何降级）</p>
+        <br>
+        <p><strong>📌 AI需求的特殊性：非功能需求</strong><br>
+        AI产品除了功能需求，还有额外的非功能需求需要定义：<br>
+        · 数据要求（需要什么数据、数据量、数据质量标准）<br>
+        · 更新要求（模型多久更新一次、数据多久刷新一次）<br>
+        · 合规要求（数据安全等级、脱敏要求）<br>
+        · 监控要求（需要监控哪些指标、异常阈值是多少）</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气智能巡检需求WBS片段</div>
+        <div class="case-content">
+          <p><strong>Epic：</strong>AI智能巡检优先级排序系统</p>
+          <p><strong>Feature 1：风险预测模型</strong><br>
+          · Story 1.1：实时接入SCADA传感器数据（压力/温度/流量）<br>
+          · Story 1.2：AI对每条管段生成0-100风险评分<br>
+          · Story 1.3：风险评分每15分钟刷新一次</p>
+          <p><strong>Feature 2：巡检任务分发</strong><br>
+          · Story 2.1：按风险评分自动排序今日巡检清单<br>
+          · Story 2.2：风险>80分的管段触发即时推送通知<br>
+          · Story 2.3：巡检员完成后可标记结果（正常/异常），反哺模型训练</p>
+          <p><strong>Feature 3：人工兜底</strong><br>
+          · Story 3.1：AI置信度低于60%时，任务标记"需人工判断"，不自动排优先级</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 12 -->
+<div class="day-card" id="day12">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 12</div>
+    <div class="day-info">
+      <h3>项目里程碑 <span class="tag">里程碑</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：里程碑计划表</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习 POC→MVP→灰度→全量 四阶段路径</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">制定4周里程碑计划</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI项目里程碑路径（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 为什么AI项目必须分阶段交付？</strong><br>
+        AI项目存在天然的不确定性：数据效果未知、模型效果未知、业务方期望可能变化。<br>
+        分阶段交付可以：① 尽早发现风险（数据不够、效果不达标）② 控制沉没成本（早期发现不行就撤）③ 持续对齐业务期望 ④ 给团队信心和可见的进展</p>
+        <br>
+        <p><strong>📌 AI项目四阶段详解</strong></p>
+        <p>🔬 <strong>POC（概念验证）阶段</strong>【时长：2-4周，目标：验证可行性】<br>
+        · 用小数据集（10-20%的数据）验证技术路线<br>
+        · 回答核心问题：数据够不够？模型效果能达标吗？技术路线对不对？<br>
+        · 产出物：POC报告（效果数据、技术风险评估、是否继续的决策建议）<br>
+        · PM关注：这个阶段结束必须做"继续/不继续"的决策，不要带着问题继续往下做！</p>
+        <p>🛠 <strong>MVP（最小可行产品）阶段</strong>【时长：4-8周，目标：验证可用性】<br>
+        · 核心功能可用，限定用户/场景范围<br>
+        · 跑通完整业务闭环（数据→模型→产品→用户反馈）<br>
+        · 产出物：MVP产品 + 业务试用报告<br>
+        · PM关注：这个阶段最重要的是"用户愿意用"，而不是"功能全不全"</p>
+        <p>🌊 <strong>灰度发布阶段</strong>【时长：2-4周，目标：验证可扩展性】<br>
+        · 逐步扩大用户/场景范围（10%→30%→100%）<br>
+        · 收集规模化后的真实反馈，验证效果稳定性<br>
+        · 产出物：灰度报告（效果数据、问题清单、优化建议）<br>
+        · PM关注：灰度期间要做好"回滚预案"，效果不行能及时撤回</p>
+        <p>🚀 <strong>全量上线+持续运营</strong>【长期，目标：持续产生价值】<br>
+        · 全面推广，建立运营机制<br>
+        · 核心运营指标：模型效果监控、用户活跃度、业务价值数据<br>
+        · PM关注：推动模型定期迭代（每月/每季度），不能上线后就撒手不管</p>
+        <br>
+        <p style="background:#fff3ee;padding:10px 12px;border-radius:8px;"><strong>⚠️ 每个阶段必须有关卡（Gate Review）：</strong><br>
+        阶段结束时必须review：效果数据是否达到继续标准？是否发现新的重大风险？业务方是否满意？<br>
+        未达标准不继续，获得充分授权后再往下走。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气泄漏预警系统里程碑规划</div>
+        <div class="case-content">
+          <p>🔬 <strong>第1周（POC）：</strong>仅用A管网区域近1年数据，跑通"时序数据→风险评分"的模型管道，不考虑UI，只要后台能出数就算成功。验证：技术可行性。</p>
+          <p>🛠 <strong>第2-3周（MVP）：</strong>完成简单的巡检APP界面，接入真实SCADA数据，在A管网区域由5名巡检员试用，能收到预警推送并标记结果。验证：业务可用性。</p>
+          <p>🌊 <strong>第4周（灰度）：</strong>扩展到B、C管网区域，20名巡检员使用，收集误报反馈，优化模型阈值。验证：规模扩展性。</p>
+          <p>🚀 <strong>第5周后（全量）：</strong>全公司推广，建立持续迭代机制。</p>
+          <p>💬 <strong>一句话记忆：</strong>POC证明能做，MVP证明有用，灰度证明可扩展，全量证明可持续。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 13 -->
+<div class="day-card" id="day13">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 13</div>
+    <div class="day-info">
+      <h3>算力与资源 <span class="tag">算力</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：资源评估清单</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习GPU、模型部署方式、算力成本基础</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">整理AI项目资源评估要点清单</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 算力与资源（详解版）</div>
+      <div class="knowledge">
+        <p><strong>🖥️ GPU vs CPU：AI算力的核心区别</strong><br>
+        CPU：少量超快的核心，处理复杂串行逻辑，适合传统程序。<br>
+        GPU：数千个较慢但能并行的核心，适合矩阵运算（AI的核心计算）。<br>
+        → <em>比喻</em>：CPU像1个数学天才，GPU像1000个普通学生同时算，AI训练需要后者。</p>
+        <br>
+        <p><strong>🔢 GPU型号参考（PM需了解）</strong><br>
+        · <strong>A100/H100</strong>：顶级GPU，用于大模型训练，成本高（每月数万元/块）<br>
+        · <strong>A10/RTX系列</strong>：中端GPU，适合模型推理部署，成本较低<br>
+        · <strong>T4</strong>：入门级推理GPU，适合轻量模型，常用于云端API部署</p>
+        <br>
+        <p><strong>☁️ 部署方式对比</strong></p>
+        <p>📌 <strong>公有云API（最轻量）</strong>：直接调用大模型厂商的API（如OpenAI、百度文心），按Token计费，开发快，但数据需上传云端，不适合敏感数据。</p>
+        <p>📌 <strong>公有云部署（灵活）</strong>：在阿里云/腾讯云上租GPU服务器跑自己的模型，灵活扩缩容，适合数据安全要求不高的场景。</p>
+        <p>📌 <strong>私有化部署（安全）</strong>：企业自购/租GPU服务器，在内网部署，数据不出厂，适合关键基础设施，但成本高、运维复杂。</p>
+        <p>📌 <strong>混合部署（推荐）</strong>：敏感计算私有化 + 通用计算上公有云，兼顾安全和成本。</p>
+        <br>
+        <p><strong>💰 成本结构（PM必须了解全貌）</strong></p>
+        <p>① <strong>数据成本</strong>：数据清洗人力 + 标注人力（往往是最大隐形成本！）</p>
+        <p>② <strong>训练成本</strong>：GPU租用费 × 训练天数（一次性，但可能需要多次迭代）</p>
+        <p>③ <strong>推理成本</strong>：每次预测消耗的GPU费用（持续性，随使用量增长）</p>
+        <p>④ <strong>运维成本</strong>：算法工程师持续监控和迭代的人力（往往被遗漏！）</p>
+        <p>⑤ <strong>基础设施成本</strong>：服务器购置/租用 + 存储 + 网络</p>
+        <br>
+        <p style="background:#e8f0fe;padding:10px 12px;border-radius:8px;"><strong>🔑 PM预算常见陷阱：</strong><br>
+        只报了"开发费用"，忘了标注成本（占比20-30%）和持续运维成本，导致项目上线后预算超支，甚至因运维没人/没钱而放弃。<br>
+        <strong>正确做法</strong>：项目立项时就把数据标注、持续迭代、运维监控的预算全部估进去。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气AI系统资源评估</div>
+        <div class="case-content">
+          <p>💬 <strong>GPU比喻：</strong>GPU就像一个能同时做1000道计算题的小学生团队，CPU是一个解题超快但只能同时做1道题的天才。AI训练需要大量并行运算，所以选GPU。</p>
+          <p><strong>资源评估清单（示例）：</strong><br>
+          · 训练硬件：租用云GPU（2块A100，预计训练3天，费用约3000元）<br>
+          · 推理服务器：私有化部署1台GPU服务器（用于生产环境，满足数据安全要求）<br>
+          · 数据存储：历史传感器数据约500GB，需专用存储<br>
+          · 标注人力：5个工程师标注200小时，折算人力成本约5万元<br>
+          · 运维：每月需1名算法工程师投入20%时间做模型监控和迭代</p>
+          <p><strong>PM常见坑：</strong>只报了开发费用，忘了标注成本和持续运维成本，导致后期预算超支。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 14 -->
+<div class="day-card review" id="day14">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 14</div>
+    <div class="day-info">
+      <h3>第二周复盘 <span class="tag">复盘</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：AI PM工作SOP</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">整理本周内容并输出AI PM工作SOP框架</span><span class="task-time">60min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI PM工作SOP框架（第二周产出）</div>
+      <div class="knowledge">
+        <p>① 需求阶段：业务目标量化 → 用户故事拆解 → AI能力边界确认 → 验收标准定义</p>
+        <p>② 设计阶段：置信度展示设计 → 人工兜底流程设计 → 可解释性设计 → 失败态设计</p>
+        <p>③ 技术协作：Prompt模板设计 → RAG知识库规划 → 算力资源评估 → 里程碑规划</p>
+        <p>④ 交付验收：按定义指标测试 → 灰度发布 → 监控并收集Bad Case</p>
+      </div>
+    </div>
+    <div class="tips">🏆 完成第二周学习！你已具备AI产品设计和技术理解能力，下周进入项目管理实战。</div>
+  </div>
+</div>
+
+</div><!-- end cards-wrap week2 -->
+
+<!-- Week 3 -->
+<div class="week-div">
+  <div class="week-title">
+    <span class="week-label">第三周</span>
+    <span class="week-desc">项目管理实战与综合输出（Day 15–21）</span>
+  </div>
+</div>
+
+<div class="cards-wrap">
+
+<!-- Day 15 -->
+<div class="day-card" id="day15">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 15</div>
+    <div class="day-info">
+      <h3>项目进度排期 <span class="tag">排期</span></h3>
+      <div class="meta">⏱ 70分钟 · 输出物：项目排期表</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI项目排期与缓冲时间设置方法</span><span class="task-time">35min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">制定含缓冲的完整项目排期</span><span class="task-time">35min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI项目排期方法论（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 AI项目排期与普通IT项目的核心区别</strong><br>
+        普通IT项目：需求明确 → 开发时间可估算 → 上线即完成。<br>
+        AI项目：数据不确定 + 模型效果不确定 + 迭代轮次不确定 → 时间更难预测 → 必须加缓冲。</p>
+        <br>
+        <p><strong>📌 AI项目排期3大原则</strong></p>
+        <p>1. <strong>数据准备时间被严重低估</strong><br>
+        数据清洗+标注通常占整体项目30-50%时间，这是普通PM最容易忽视的环节。<br>
+        建议：在数据阶段估算时间后 ×1.5 作为保险。</p>
+        <p>2. <strong>模型迭代不可预测</strong><br>
+        第一轮模型训练后效果通常不达标（准确率可能只有60-70%），需要多轮调参/补充数据/换方案。<br>
+        建议：POC阶段结束后才能较准确估算，每个模型迭代周期留2-4周缓冲。</p>
+        <p>3. <strong>AI项目排期公式</strong><br>
+        乐观估算 × 1.5（数据风险） × 1.3（迭代风险） × 1.2（缓冲） = 实际需要的时间<br>
+        示例：工程师说"2周能搞定"，实际应该规划 2×1.5×1.3×1.2 ≈ 5周。</p>
+        <br>
+        <p><strong>📌 AI项目各阶段时间参考（天然气场景）</strong></p>
+        <p>· 数据摸底 + 需求确认：1-2周（不可压缩）<br>
+        · 数据清洗 + 标注：2-4周（数据量决定，最常延期）<br>
+        · POC模型训练：2-4周<br>
+        · MVP开发：4-8周（包含UI/后端/API集成）<br>
+        · 测试 + 灰度：2-4周<br>
+        · 全量上线 + 运营机制建立：2-3周</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气智能巡检项目8周排期</div>
+        <div class="case-content">
+          <p>📅 Week 1：需求确认 + 数据摸底（有多少数据、质量如何）<br>
+          📅 Week 2-3：数据清洗 + 标注（缓冲：若数据质量差，延期1周）<br>
+          📅 Week 4：POC模型训练 + 效果评估<br>
+          📅 Week 5：MVP开发（模型集成到系统）<br>
+          📅 Week 6：内测+修bug（缓冲：迭代1轮模型）<br>
+          📅 Week 7：灰度发布（5个试点站）<br>
+          📅 Week 8：总结上线<br><br>
+          ⚠️ <strong>常见坑：</strong>工程师说"模型2周能搞定"，PM没有加迭代缓冲，结果模型效果不达标，一轮迭代变两轮，项目延期4周，老板发飙。<br>
+          ✅ <strong>正确做法：</strong>在Week 4后加"迭代缓冲2周"，即使不需要也能提前交付，留有余地。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 16 -->
+<div class="day-card" id="day16">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 16</div>
+    <div class="day-info">
+      <h3>沟通机制 <span class="tag">协作</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：会议模板</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习与算法/研发/业务三方沟通的要点和障碍</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">设计周会/站会议程模板</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI项目三方沟通要点（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 AI PM是三方协调的"枢纽"</strong><br>
+        算法工程师 ↔ PM ↔ 业务方，PM必须能双向翻译：把业务需求翻译成技术目标，把技术现状翻译成业务语言。</p>
+        <br>
+        <p><strong>🔬 与算法工程师沟通的5个要点</strong></p>
+        <p>① 不要问"这个能做吗"，要问"在什么条件下能做到什么效果"（设定预期边界）。</p>
+        <p>② 聚焦效果指标，不质疑模型内部逻辑（那是算法工程师的专业领域）。</p>
+        <p>③ 明确Bad Case的处理机制：当模型不确定时，系统该怎么做？</p>
+        <p>④ 约定迭代频率和迭代触发条件（效果下降超过X%就迭代？还是每月固定迭代？）。</p>
+        <p>⑤ 建立"效果看板"：确保双方看到的是同一份数据，基于相同事实对话。</p>
+        <br>
+        <p><strong>💻 与开发工程师沟通的4个要点</strong></p>
+        <p>① API接口规范：明确模型输入（什么数据格式）和输出（返回什么字段，含置信度）。</p>
+        <p>② 降级方案（Fallback）：模型服务不可用时系统行为，需明确写进需求文档。</p>
+        <p>③ 性能指标：响应时间要求、并发量要求，提前对齐避免上线后才发现达不到要求。</p>
+        <p>④ 数据回流接口：用户反馈如何自动收集入库，需要提前设计。</p>
+        <br>
+        <p><strong>🏢 与业务方沟通的5个要点</strong></p>
+        <p>① 不说技术术语，说业务价值（"准确率85%"→"每100次预警，有85次是真实问题"）。</p>
+        <p>② 主动管理期望：上线第一个月不是最终效果，AI需要持续学习才会越来越好。</p>
+        <p>③ 让业务方参与数据标注评审：他们最懂什么是"正确答案"，参与感也能提升接受度。</p>
+        <p>④ 定期汇报业务价值数据（减少了多少人工、节省了多少成本），让管理层持续支持。</p>
+        <p>⑤ 对"AI不行"的反馈保持开放：每一个"AI说错了"都是宝贵的改进数据。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：AI项目周会模板</div>
+        <div class="case-content">
+          <p><strong>AI项目周会议程（30分钟）：</strong></p>
+          <p>① 本周进展（10分钟）<br>
+          · 算法：模型当前准确率/召回率，本周优化了什么<br>
+          · 开发：已完成功能模块，接口联调状态<br>
+          · 业务：数据标注进度，用户反馈（如已试用）</p>
+          <p>② 问题对焦（10分钟）<br>
+          · 列出阻塞项（Blocker），逐个明确解决责任人和deadline</p>
+          <p>③ 下周计划（5分钟）<br>
+          · 各方下周目标，对齐里程碑节点</p>
+          <p>④ 风险提示（5分钟）<br>
+          · 新增风险点，是否需要升级汇报</p>
+          <p>💬 <strong>沟通金句：</strong>对业务方不说"模型还没收敛"，说"AI的判断准确率目前82%，我们计划下周优化到88%，再用1周达标后上线"。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 17 -->
+<div class="day-card" id="day17">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 17</div>
+    <div class="day-info">
+      <h3>项目验收 <span class="tag">验收</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：验收文档</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习AI效果验收标准的制定方法</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">撰写天然气AI项目验收方案</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 AI效果验收方法论（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 AI验收与传统IT验收的5大不同</strong></p>
+        <p>传统IT：按需求文档点点功能，实现了就验收通过。<br>
+        AI产品验收额外包括：① 模型效果指标测试 ② 边界case处理 ③ 压力/稳定性测试 ④ 可解释性验证 ⑤ 兜底机制验证。</p>
+        <br>
+        <p><strong>📌 验收必备5项</strong></p>
+        <p>① <strong>模型效果指标达标</strong>：用"金标准测试集"（已知正确答案的历史数据）盲测，计算准确率/召回率，对比验收标准阈值。</p>
+        <p>② <strong>响应时延达标</strong>：实际测试系统响应时间，在设计并发量下是否稳定达标。</p>
+        <p>③ <strong>边界case处理正常</strong>：测试极端输入（数据异常、空输入、超出范围的值），系统是否优雅处理而不崩溃。</p>
+        <p>④ <strong>人工兜底机制可用</strong>：验证置信度低于阈值时是否正确触发人工审核流程。</p>
+        <p>⑤ <strong>业务闭环打通</strong>：端到端走一遍完整流程：数据进→AI处理→结果推送→用户操作→反馈回流，全部正常。</p>
+        <br>
+        <p><strong>📌 测试数据集的设计原则</strong></p>
+        <p>· 覆盖正常和异常case（不能只测"好的情况"）<br>
+        · 包含历史上曾经出问题的case（确保已知bug已修复）<br>
+        · 与训练数据完全隔离（不能用训练数据做验收测试，会虚高效果）<br>
+        · 尽量贴近真实生产分布（防止模型只在测试集好但实际效果差）</p>
+        <br>
+        <p style="background:#fce8e8;padding:10px 12px;border-radius:8px;"><strong>🔴 验收的黄金原则：</strong><br>
+        验收标准必须在项目"启动时"就写进合同，上线后再讨论标准会导致双方扯皮、责任不清。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气智能巡检系统验收方案</div>
+        <div class="case-content">
+          <p><strong>验收标准（需在合同/需求文档中明确）：</strong><br>
+          · 召回率 ≥ 90%（不能漏掉真实风险）<br>
+          · 精确率 ≥ 75%（误报率可接受）<br>
+          · 系统响应时间 ≤ 3秒<br>
+          · 置信度低于60%时，系统自动转为"待人工核查"状态<br>
+          · 支持巡检员标记"误报"并自动入库（反馈机制）</p>
+          <p><strong>验收测试方法：</strong><br>
+          · 准备"已知结果"测试数据集（100段真实历史数据，标注好哪些是真实异常）<br>
+          · 盲测：让AI跑一遍，对比AI结果 vs 真实标签，计算指标<br>
+          · 压力测试：模拟全管网同时上报数据，测试系统在高并发下是否稳定</p>
+          <p>💬 <strong>关键原则：</strong>验收标准要在项目启动时就写进合同，不能等上线后再扯皮。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 18 -->
+<div class="day-card" id="day18">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 18</div>
+    <div class="day-info">
+      <h3>合规与安全 <span class="tag">合规</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：合规检查清单</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习数据脱敏、数据合规、AI安全基础要求</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">列出天然气AI项目合规检查点</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 合规与安全全景（详解版）</div>
+      <div class="knowledge">
+        <p><strong>🔒 数据安全合规</strong></p>
+        <p>· <strong>《数据安全法》</strong>：重要数据（含关键基础设施数据）需做数据分类分级，未经批准不得出境。</p>
+        <p>· <strong>《个人信息保护法》</strong>：涉及员工/用户个人信息的数据，需告知并获得同意才能用于训练。</p>
+        <p>· <strong>等保三级要求</strong>：天然气管网属于关键基础设施，IT系统需满足等保三级要求（访问控制、审计、加密通信等）。</p>
+        <p>· <strong>PM行动</strong>：项目立项前完成数据安全评估，明确数据安全等级和使用边界。</p>
+        <br>
+        <p><strong>🙈 数据脱敏规范</strong></p>
+        <p>· <strong>必脱字段</strong>：站点编号→随机ID；地理位置坐标→模糊化/区域代号；员工姓名/工号→匿名化；管网拓扑结构→脱敏版本。</p>
+        <p>· <strong>脱敏验证</strong>：脱敏后的数据无法还原回原始信息，且脱敏不影响数据分析和模型训练效果。</p>
+        <br>
+        <p><strong>⚖️ AI算法合规要求</strong></p>
+        <p>· <strong>算法透明度</strong>：《互联网信息服务算法推荐管理规定》要求算法服务有公示机制，用户有权关闭算法推荐。</p>
+        <p>· <strong>算法可解释性</strong>：对用户权益有重大影响的算法决策（如安全预警），需要提供解释机制。</p>
+        <p>· <strong>算法审计</strong>：重要场景的AI系统需有定期审计机制，证明算法公平性和有效性。</p>
+        <br>
+        <p><strong>🛡️ 模型安全</strong></p>
+        <p>· <strong>对抗攻击</strong>：恶意构造的输入可能让AI误判（如在泄漏图片上添加人眼不可见的噪声，让AI漏检）。</p>
+        <p>· <strong>数据投毒</strong>：如果训练数据被污染（恶意标注），模型会学到错误知识。</p>
+        <p>· <strong>PM行动</strong>：在系统设计时考虑输入校验和异常检测，防止恶意输入影响模型判断。</p>
+        <br>
+        <p><strong>📋 合规检查清单（PM必须追踪）</strong></p>
+        <p>① 数据安全评估报告（立项前完成） ② 数据脱敏方案（上线前审核） ③ 供应商数据使用协议（签合同前） ④ 算法上线备案（按监管要求） ⑤ 定期安全审计（上线后每年至少一次）</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：天然气AI合规检查清单（10项）</div>
+        <div class="case-content">
+          <p>✅ 1. 所有数据存储在公司内网，未接入公有云AI服务<br>
+          ✅ 2. 训练数据已脱敏（站号加密，真实坐标替换为虚拟ID）<br>
+          ✅ 3. 数据访问权限按角色控制（算法工程师只能看脱敏数据）<br>
+          ✅ 4. 模型部署在满足等保三级的服务器环境<br>
+          ✅ 5. 供应商合同中明确"不得将客户数据用于模型训练"<br>
+          ✅ 6. AI决策结果有人工复核机制，不做完全自动化决策<br>
+          ✅ 7. 系统日志留存6个月以上，可追溯<br>
+          ✅ 8. 已完成网络安全评估（AI系统接入生产控制网需特别审批）<br>
+          ✅ 9. 算法使用情况有定期审查机制<br>
+          ✅ 10. 告知使用AI辅助决策的用户（知情权）</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 19 -->
+<div class="day-card" id="day19">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 19</div>
+    <div class="day-info">
+      <h3>模型迭代闭环 <span class="tag">迭代</span></h3>
+      <div class="meta">⏱ 60分钟 · 输出物：迭代闭环图</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习Bad Case管理方法与模型迭代逻辑</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">设计AI模型迭代闭环流程图</span><span class="task-time">30min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 模型迭代闭环（详解版）</div>
+      <div class="knowledge">
+        <p><strong>📌 为什么AI产品必须持续迭代？</strong><br>
+        AI模型不是一次训练就永久有效的，它面临：<br>
+        · <strong>概念漂移</strong>：真实世界的数据分布随时间变化（季节、设备老化），模型预测的"假设"逐渐失效。<br>
+        · <strong>新场景出现</strong>：出现训练数据中没见过的新情况（新设备型号、新故障类型）。<br>
+        · <strong>标准变化</strong>：企业操作规程、安全标准更新，模型判断标准也需同步更新。</p>
+        <br>
+        <p><strong>📌 Bad Case管理5步法（详解）</strong></p>
+        <p>Step 1. <strong>收集</strong>：设计好用户反馈入口 → 系统自动保存该case的完整输入数据（传感器数值、时间戳等），并记录用户反馈（误报/漏报）。</p>
+        <p>Step 2. <strong>分类分析</strong>：PM+算法工程师定期（每周/每两周）review Bad Case，按问题类型分类：① 数据质量问题 ② 模型能力边界问题 ③ 规则设定问题 ④ 特殊场景问题。</p>
+        <p>Step 3. <strong>优先级排序</strong>：按"频率×影响"排序，高频高危的Bad Case优先处理（频率高说明普遍性，影响大说明重要性）。</p>
+        <p>Step 4. <strong>标注迭代</strong>：对Bad Case数据做正确标注，加入训练集。注意：同时避免新数据和旧数据分布失衡（可能造成"好了这个，坏了那个"的问题）。</p>
+        <p>Step 5. <strong>迭代验证</strong>：用Bad Case数据集测试新模型，确认问题已修复；同时用全量测试集测试，确认没有引入新的问题（回归测试）。</p>
+        <br>
+        <p><strong>📌 迭代频率建议</strong></p>
+        <p>· 上线初期（1-3个月）：每2周迭代一次（Bad Case积累快，需要快速优化）<br>
+        · 稳定期：每月迭代一次<br>
+        · 触发式迭代：效果指标下降超过5%时立即触发，不等定期迭代</p>
+        <br>
+        <p><strong>📌 迭代效果追踪</strong><br>
+        每次迭代后需记录：本次迭代解决了哪些Bad Case、各项指标变化、是否引入新问题。<br>
+        长期追踪"模型进化曲线"，作为AI项目价值的可视化证明。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 通俗案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例：巡检AI "冬季误报"问题闭环修复</div>
+        <div class="case-content">
+          <p><strong>发现问题：</strong>12月上线后，巡检员反馈冬天凌晨2-4点误报率特别高，正常的压力波动被AI误判为"高风险"，每天有5个误报，严重影响信任度。</p>
+          <p><strong>分析：</strong>PM查看Bad Case，发现训练数据主要来自春秋季，冬季低温导致管道压力有规律性波动，但训练数据中冬季样本太少，AI没学过这种模式。</p>
+          <p><strong>修复闭环：</strong><br>
+          ① 将12月的误报数据全部标注为"冬季正常压力波动"<br>
+          ② 补充标注了近2年冬季正常数据（200条）<br>
+          ③ 算法工程师用新数据微调模型<br>
+          ④ 2周后测试，冬季凌晨误报率从35%降到6%</p>
+          <p>💬 <strong>关键认知：</strong>AI产品不是"开发完就稳定"，Bad Case就是它的"补课机会"，PM要主动建立收集-分析-迭代机制。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 20 -->
+<div class="day-card" id="day20">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 20</div>
+    <div class="day-info">
+      <h3>行业AI案例 <span class="tag">案例</span></h3>
+      <div class="meta">⏱ 70分钟 · 输出物：行业案例分析</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">学习天然气/能源行业AI典型应用场景</span><span class="task-time">35min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">收集3个案例并总结核心亮点</span><span class="task-time">35min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 能源行业AI三大典型场景</div>
+      <div class="knowledge">
+        <p>🔍 <strong>设备预测性维护</strong>：通过传感器数据预测设备故障，提前维修，减少非计划停机。</p>
+        <p>📊 <strong>智能调度优化</strong>：AI根据需求预测、天气、价格等多因素动态优化供气调度，降低能耗。</p>
+        <p>🤖 <strong>智能问答/知识库</strong>：将技术规程、安全手册AI化，员工用自然语言快速查询操作规范。</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 3个行业案例</div>
+      <div class="case-box">
+        <div class="case-title">🏭 案例1：压缩机预测性维护（某管网公司）</div>
+        <div class="case-content">
+          <p><strong>做什么：</strong>用振动、温度传感器数据，AI预测压缩机轴承故障，提前3-7天预警。</p>
+          <p><strong>亮点：</strong>非计划停机次数减少60%，每年节省维修费300万元。模型不替代工程师判断，而是生成"建议检查报告"供工程师参考。</p>
+        </div>
+      </div>
+      <div class="case-box" style="margin-top:10px;">
+        <div class="case-title">🏭 案例2：AI巡检报告自动生成（某城市燃气公司）</div>
+        <div class="case-content">
+          <p><strong>做什么：</strong>巡检员语音/文字输入巡检结果，AI自动生成规范格式报告，推送给管理层。</p>
+          <p><strong>亮点：</strong>报告生成时间从30分钟降到2分钟，格式统一，数据可追溯，巡检员从"写报告"解放出来。</p>
+        </div>
+      </div>
+      <div class="case-box" style="margin-top:10px;">
+        <div class="case-title">🏭 案例3：供气需求AI预测（某省级管网）</div>
+        <div class="case-content">
+          <p><strong>做什么：</strong>结合历史用气量、天气预报、工业客户生产计划，AI预测未来7天各区域用气需求。</p>
+          <p><strong>亮点：</strong>预测误差从±15%降到±5%，调度人员提前优化管存，高峰期供气保障率提升至99.5%。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day 21 -->
+<div class="day-card review" id="day21">
+  <div class="day-header" onclick="toggle(this)">
+    <div class="day-num">Day 21</div>
+    <div class="day-info">
+      <h3>实战输出 + 21天总复盘 <span class="tag">实战</span></h3>
+      <div class="meta">⏱ 90分钟 · 输出物：AI项目计划书 + 总复盘文档</div>
+    </div>
+    <div class="arrow">▼</div>
+  </div>
+  <div class="day-body">
+    <div class="section">
+      <div class="section-title">📖 今日任务</div>
+      <ul class="task-list">
+        <li><span class="task-icon">✅</span><span class="task-text">设计一个天然气AI智能产品（选题+方案）</span><span class="task-time">30min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">完成AI项目全流程规划（数据→模型→产品→运营）</span><span class="task-time">40min</span></li>
+        <li><span class="task-icon">✅</span><span class="task-text">21天学习总复盘与后续计划</span><span class="task-time">20min</span></li>
+      </ul>
+    </div>
+    <div class="section">
+      <div class="section-title">💡 21天学习成果体系</div>
+      <div class="knowledge">
+        <p>✅ <strong>认知层</strong>：理解AI PM定位、AI术语体系、行业应用场景</p>
+        <p>✅ <strong>方法层</strong>：掌握需求拆解WBS、里程碑规划、验收标准制定、Bad Case管理</p>
+        <p>✅ <strong>技术层</strong>：理解LLM/RAG/Prompt/向量库/算力，能与算法工程师对话</p>
+        <p>✅ <strong>输出层</strong>：完成AI PM工作SOP、项目风险清单、Prompt模板库、项目计划书</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🌟 最终实战输出模板</div>
+      <div class="case-box">
+        <div class="case-title">🏭 天然气AI项目计划书框架（一页纸版本）</div>
+        <div class="case-content">
+          <p><strong>项目名称：</strong>天然气管网智能泄漏预警系统</p>
+          <p><strong>业务目标：</strong>将管道漏查率从8%降至2%，减少安全事故，年节省应急成本预估200万元</p>
+          <p><strong>AI方案：</strong>基于时序传感器数据的异常检测模型 + 巡检优先级排序引擎</p>
+          <p><strong>数据需求：</strong>SCADA近3年数据，需2000条标注异常样本，工程师参与标注</p>
+          <p><strong>里程碑：</strong>POC(W1-2) → MVP(W3-5) → 灰度(W6-7) → 全量(W8+)</p>
+          <p><strong>成功指标：</strong>召回率≥90%，误报率≤25%，系统响应≤3s</p>
+          <p><strong>风险应对：</strong>数据质量预评估，设置迭代缓冲周，人工兜底机制</p>
+          <p><strong>后续规划：</strong>建立Bad Case持续收集机制，每月迭代一次模型</p>
+        </div>
+      </div>
+    </div>
+    <div class="tips">🎉 恭喜完成21天AI PM学习！你已从传统数智化PM成功完成AI PM知识迁移。建议后续：① 找1个真实项目实践 ② 每周精读1篇AI行业报告 ③ 建立个人Prompt模板库持续积累。</div>
+  </div>
+</div>
+
+</div><!-- end cards-wrap week3 -->
+
+<div class="footer">
+  <p>📘 基于《AI学习计划.xlsx》生成 · 21天 AI PM 成长路径 · 天然气行业专属案例</p>
+  <p style="margin-top:4px;color:#aaa;">点击每个 Day 标题可展开/折叠详情</p>
+</div>
+
+<script>
+  // Toggle expand/collapse
+  function toggle(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.arrow');
+    if (body.classList.contains('show')) {
+      body.classList.remove('show');
+      header.classList.remove('open');
+    } else {
+      body.classList.add('show');
+      header.classList.add('open');
+    }
+  }
+
+  // Build TOC
+  const tocContainer = document.getElementById('toc');
+  const days = [
+    ['day1','Day1','AI PM认知'],['day2','Day2','AI基础术语'],['day3','Day3','AI项目流程'],
+    ['day4','Day4','项目风险'],['day5','Day5','数据与标注'],['day6','Day6','AI产品指标'],
+    ['day7','Day7','第一周复盘'],['day8','Day8','AI产品设计'],['day9','Day9','Prompt工程'],
+    ['day10','Day10','RAG技术落地'],['day11','Day11','需求拆解WBS'],['day12','Day12','项目里程碑'],
+    ['day13','Day13','算力与资源'],['day14','Day14','第二周复盘'],['day15','Day15','项目进度排期'],
+    ['day16','Day16','沟通机制'],['day17','Day17','项目验收'],['day18','Day18','合规与安全'],
+    ['day19','Day19','模型迭代闭环'],['day20','Day20','行业AI案例'],['day21','Day21','实战输出复盘']
+  ];
+  days.forEach(([id, day, title]) => {
+    const a = document.createElement('a');
+    a.href = '#' + id;
+    a.className = 'toc-item';
+    a.innerHTML = `<span class="toc-day">${day}</span><span>${title}</span>`;
+    tocContainer.appendChild(a);
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('.toc-item').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.getElementById(link.getAttribute('href').slice(1));
+      if (target) {
+        target.scrollIntoView({behavior: 'smooth', block: 'start'});
+        const body = target.querySelector('.day-body');
+        const header = target.querySelector('.day-header');
+        if (!body.classList.contains('show')) {
+          body.classList.add('show');
+          header.classList.add('open');
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
